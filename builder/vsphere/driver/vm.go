@@ -315,6 +315,15 @@ func (vm *VirtualMachineDriver) Clone(ctx context.Context, config *CloneConfig) 
 	cloneSpec.Location = relocateSpec
 	cloneSpec.PowerOn = false
 
+	if config.Cluster != "" && config.Host != "" {
+		h, err := vm.driver.FindHost(config.Host)
+		if err != nil {
+			return nil, err
+		}
+		var host = h.host.Reference()
+		cloneSpec.Location.Host = &host
+	}
+
 	if config.LinkedClone == true {
 		cloneSpec.Location.DiskMoveType = "createNewChildDiskBacking"
 
